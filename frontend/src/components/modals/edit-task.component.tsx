@@ -108,28 +108,30 @@ const EditTask: React.FC<
 
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
-  const [dueType, setDueType] = useState('dueByTime');
+  console.log(task);
+  const [dueType, setDueType] = useState(
+    task.recurrenceRule && task.recurrenceRule.length > 0
+      ? 'dueByRec'
+      : 'dueByTime'
+  );
   const [reminderType, setReminderType] = useState('remindBefore');
   const [dueTimeVisible, setDueTimeVisible] = useState(false);
   const [reminderTimeVisible, setReminderTimeVisible] = useState(false);
   const [remindButton, setRemindButton] = useState('remindBefore');
-
-  let rRuleText = convertToTextWithRRule(rRuleString);
-  let rRuleTextList = rRuleText.match(
-    /\b[\w,|\w-|\w:]+(?:\s+[\w,|\w-|\w:]+){0,5}/g
+  const [rRuleTextList, setRRuleTextList] = useState(
+    convertToTextWithRRule(rRuleString).match(
+      /\b[\w,|\w-|\w:]+(?:\s+[\w,|\w-|\w:]+){0,5}/g
+    )
   );
 
   useEffect(() => {
-    rRuleText = convertToTextWithRRule(rRuleString);
-    rRuleTextList = rRuleText.match(
-      /\b[\w,|\w-|\w:]+(?:\s+[\w,|\w-|\w:]+){0,5}/g
+    let rRuleText = convertToTextWithRRule(rRuleString);
+    setRRuleTextList(
+      rRuleText.match(/\b[\w,|\w-|\w:]+(?:\s+[\w,|\w-|\w:]+){0,5}/g)
     );
   }, [rRuleString]);
 
   const { projectId } = useParams();
-  if (task.recurrenceRule) {
-    props.updateRruleString(props.task.recurrenceRule);
-  }
 
   useEffect(() => {
     if (projectId) {
@@ -199,6 +201,8 @@ const EditTask: React.FC<
   };
 
   const openModal = () => {
+    console.log('fksjhjdfhkdjfksdjklkfgsjldjlgjkl');
+    props.updateRruleString(task.recurrenceRule);
     setVisible(true);
   };
 
@@ -333,8 +337,12 @@ const EditTask: React.FC<
           {/* due type */}
           <span style={{ color: 'rgba(0, 0, 0, 0.85)' }}>Due&nbsp;&nbsp;</span>
           <Radio.Group
+            defaultValue={dueType}
             value={dueType}
-            onChange={(e) => setDueType(e.target.value)}
+            onChange={(e) => {
+              console.log(e.target.value);
+              setDueType(e.target.value);
+            }}
             buttonStyle="solid"
             style={{ marginBottom: 18 }}
           >
@@ -391,7 +399,7 @@ const EditTask: React.FC<
               </div>
             </div>
           )}
-          {dueType !== 'dueByTime' && (
+          {dueType === 'dueByRec' && (
             <div>
               <div
                 style={{
@@ -570,7 +578,7 @@ const EditTask: React.FC<
     <>
       <Tooltip title={'Edit Task'}>
         <div>
-          <EditTwoTone onClick={() => setVisible(!visible)} />
+          <EditTwoTone onClick={openModal} />
         </div>
       </Tooltip>
       {getModal()}
