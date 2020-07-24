@@ -114,10 +114,18 @@ const EditTask: React.FC<
   const [reminderTimeVisible, setReminderTimeVisible] = useState(false);
   const [remindButton, setRemindButton] = useState('remindBefore');
 
-  const rRuleText = convertToTextWithRRule(rRuleString);
-  const rRuleTextList = rRuleText.match(
+  let rRuleText = convertToTextWithRRule(rRuleString);
+  let rRuleTextList = rRuleText.match(
     /\b[\w,|\w-|\w:]+(?:\s+[\w,|\w-|\w:]+){0,5}/g
   );
+
+  useEffect(() => {
+    rRuleText = convertToTextWithRRule(rRuleString);
+    rRuleTextList = rRuleText.match(
+      /\b[\w,|\w-|\w:]+(?:\s+[\w,|\w-|\w:]+){0,5}/g
+    );
+  }, [rRuleString]);
+
   const { projectId } = useParams();
   if (task.recurrenceRule) {
     props.updateRruleString(props.task.recurrenceRule);
@@ -343,43 +351,46 @@ const EditTask: React.FC<
             </Radio>
           </Radio.Group>
 
-          <div style={{ display: 'flex' }}>
-            <div style={{ display: 'flex', flex: 1 }}>
-              <Tooltip title="Select Due Date" placement="left">
-                <Form.Item name="dueDate" style={{ width: '100%' }}>
-                  <DatePicker
-                    allowClear={true}
-                    style={{ width: '100%' }}
-                    placeholder="Due Date"
-                    disabled={dueType !== 'dueByTime'}
-                    onChange={(value) => setDueTimeVisible(value !== null)}
-                    defaultValue={
-                      //  defaultValue here not work try to set initail value on Form outside
-                      task.dueDate
-                        ? moment(task.dueDate, dateFormat)
-                        : undefined
-                    }
-                  />
-                </Form.Item>
-              </Tooltip>
-              {dueTimeVisible && (
-                <Tooltip title="Select Due Time" placement="right">
-                  <Form.Item name="dueTime" style={{ width: '210px' }}>
-                    <TimePicker
+          {dueType === 'dueByTime' && (
+            <div style={{ display: 'flex' }}>
+              <div style={{ display: 'flex', flex: 1 }}>
+                <Tooltip title="Select Due Date" placement="left">
+                  <Form.Item name="dueDate" style={{ width: '100%' }}>
+                    <DatePicker
                       allowClear={true}
-                      format="HH:mm"
-                      placeholder="Due Time"
-                      disabled={dueType !== 'dueByTime'}
+                      style={{ width: '100%' }}
+                      placeholder="Due Date"
+                      onChange={(value) => setDueTimeVisible(value !== null)}
                       defaultValue={
                         //  defaultValue here not work try to set initail value on Form outside
-                        task.dueTime ? moment(task.dueTime, 'HH:mm') : undefined
+                        task.dueDate
+                          ? moment(task.dueDate, dateFormat)
+                          : undefined
                       }
                     />
                   </Form.Item>
                 </Tooltip>
-              )}
+                {dueTimeVisible && (
+                  <Tooltip title="Select Due Time" placement="right">
+                    <Form.Item name="dueTime" style={{ width: '210px' }}>
+                      <TimePicker
+                        allowClear={true}
+                        format="HH:mm"
+                        placeholder="Due Time"
+                        disabled={dueType !== 'dueByTime'}
+                        defaultValue={
+                          //  defaultValue here not work try to set initail value on Form outside
+                          task.dueTime
+                            ? moment(task.dueTime, 'HH:mm')
+                            : undefined
+                        }
+                      />
+                    </Form.Item>
+                  </Tooltip>
+                )}
+              </div>
             </div>
-          </div>
+          )}
           {dueType !== 'dueByTime' && (
             <div>
               <div
@@ -387,7 +398,6 @@ const EditTask: React.FC<
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  padding: '0.5em',
                 }}
               >
                 <div className="recurrence-title">
