@@ -108,9 +108,8 @@ const EditTask: React.FC<
 
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
-  console.log(task);
   const [dueType, setDueType] = useState(
-    task.recurrenceRule && task.recurrenceRule.length > 0
+    !!task.recurrenceRule && task.recurrenceRule.length > 0
       ? 'dueByRec'
       : 'dueByTime'
   );
@@ -118,17 +117,13 @@ const EditTask: React.FC<
   const [dueTimeVisible, setDueTimeVisible] = useState(false);
   const [reminderTimeVisible, setReminderTimeVisible] = useState(false);
   const [remindButton, setRemindButton] = useState('remindBefore');
-  const [rRuleTextList, setRRuleTextList] = useState(
-    convertToTextWithRRule(rRuleString).match(
-      /\b[\w,|\w-|\w:]+(?:\s+[\w,|\w-|\w:]+){0,5}/g
-    )
-  );
+  const [rRuleText, setRRuleText] = useState('');
 
   useEffect(() => {
+    console.log('useEffect', rRuleString);
     let rRuleText = convertToTextWithRRule(rRuleString);
-    setRRuleTextList(
-      rRuleText.match(/\b[\w,|\w-|\w:]+(?:\s+[\w,|\w-|\w:]+){0,5}/g)
-    );
+
+    setRRuleText(rRuleText);
   }, [rRuleString]);
 
   const { projectId } = useParams();
@@ -198,11 +193,15 @@ const EditTask: React.FC<
   const handleCancel = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.stopPropagation();
     setVisible(false);
+    setDueType((dueType) =>
+      !!task.recurrenceRule && task.recurrenceRule.length > 0
+        ? 'dueByRec'
+        : 'dueByTime'
+    );
   };
 
   const openModal = () => {
-    console.log('fksjhjdfhkdjfksdjklkfgsjldjlgjkl');
-    props.updateRruleString(task.recurrenceRule);
+    task.recurrenceRule && props.updateRruleString(task.recurrenceRule);
     setVisible(true);
   };
 
@@ -340,7 +339,6 @@ const EditTask: React.FC<
             defaultValue={dueType}
             value={dueType}
             onChange={(e) => {
-              console.log(e.target.value);
               setDueType(e.target.value);
             }}
             buttonStyle="solid"
@@ -409,12 +407,7 @@ const EditTask: React.FC<
                 }}
               >
                 <div className="recurrence-title">
-                  <div>{rRuleTextList && rRuleTextList[0]}</div>
-                  {rRuleTextList &&
-                    rRuleTextList.length > 1 &&
-                    rRuleTextList
-                      .slice(1)
-                      .map((text, index) => <div key={index}>{text}</div>)}
+                  <div>{rRuleText}</div>
                 </div>
               </div>
               <ReactRRuleGenerator />

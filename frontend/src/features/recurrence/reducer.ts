@@ -452,6 +452,7 @@ const slice = createSlice({
     },
     updateRRuleString: (state, action: PayloadAction<RRuleStringFromTask>) => {
       const { rruleString } = action.payload;
+      console.log('RRReux', rruleString);
       state.rRuleString = rruleString;
       const rule = RRule.fromString(rruleString);
       state.freq = rule.options.freq;
