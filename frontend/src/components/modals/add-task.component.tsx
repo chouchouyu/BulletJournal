@@ -187,17 +187,12 @@ const AddTask: React.FC<
     return { value: time };
   });
 
-  let rRuleText = convertToTextWithRRule(props.rRuleString);
-  // split string by n words including marks like space , - : n is setting by {0, n} which is {0, 5} right now
-  let rRuleTextList = rRuleText.match(
-    /\b[\w,|\w-|\w:]+(?:\s+[\w,|\w-|\w:]+){0,5}/g
+  const [rRuleText, setRRuleText] = useState(
+    convertToTextWithRRule(props.rRuleString)
   );
 
   useEffect(() => {
-    rRuleText = convertToTextWithRRule(props.rRuleString);
-    rRuleTextList = rRuleText.match(
-      /\b[\w,|\w-|\w:]+(?:\s+[\w,|\w-|\w:]+){0,5}/g
-    );
+    setRRuleText(convertToTextWithRRule(props.rRuleString));
   }, [props.rRuleString]);
   const getSelections = () => {
     if (!props.group || !props.group.users) {
@@ -331,23 +326,16 @@ const AddTask: React.FC<
             </div>
           )}
           {dueType === 'dueByRec' && (
-            <div>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <div className="recurrence-title">
-                  <div>{rRuleTextList && rRuleTextList[0]}</div>
-                  {rRuleTextList &&
-                    rRuleTextList.length > 1 &&
-                    rRuleTextList
-                      .slice(1)
-                      .map((text, index) => <div key={index}>{text}</div>)}
-                </div>
-              </div>
+            <div
+              style={{
+                borderTop: '1px solid #E8E8E8',
+                borderBottom: '1px solid #E8E8E8',
+                paddingTop: '24px',
+                marginBottom: '24px',
+              }}
+            >
+              <div className="recurrence-title">{rRuleText}</div>
+
               <ReactRRuleGenerator />
             </div>
           )}
