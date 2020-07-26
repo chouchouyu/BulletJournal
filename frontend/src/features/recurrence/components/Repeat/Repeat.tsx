@@ -71,10 +71,10 @@ class Repeat extends React.Component<RepeatProps> {
     super(props);
     this.state = {};
   }
-  componentDidMount = () => {
-    this.props.updateStartString(this.props.startDate, this.props.startTime);
-    this.props.updateRepeatYearlyOn(this.props.repeatYearlyOn);
-  };
+  //   componentDidMount = () => {
+  //     this.props.updateStartString(this.props.startDate, this.props.startTime);
+  //     this.props.updateRepeatYearlyOn(this.props.repeatYearlyOn);
+  //   };
 
   onChangeValue = (value: Frequency) => {
     this.props.updateFreq(value);

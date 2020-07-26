@@ -113,19 +113,24 @@ const EditTask: React.FC<
       ? 'dueByRec'
       : 'dueByTime'
   );
+  console.log(task);
   const [reminderType, setReminderType] = useState('remindBefore');
-  const [dueTimeVisible, setDueTimeVisible] = useState(false);
+  const [dueTimeVisible, setDueTimeVisible] = useState(!!task.dueTime);
   const [reminderTimeVisible, setReminderTimeVisible] = useState(false);
   const [remindButton, setRemindButton] = useState('remindBefore');
-  const [rRuleText, setRRuleText] = useState('');
+  const [rRuleText, setRRuleText] = useState(
+    convertToTextWithRRule(props.rRuleString)
+  );
 
   useEffect(() => {
-    console.log('useEffect', rRuleString);
-    let rRuleText = convertToTextWithRRule(rRuleString);
+    console.log('mount effect');
+    task.recurrenceRule && props.updateRruleString(task.recurrenceRule);
+  }, []);
 
-    setRRuleText(rRuleText);
-  }, [rRuleString]);
-
+  useEffect(() => {
+    setRRuleText(convertToTextWithRRule(props.rRuleString));
+  }, [props.rRuleString]);
+  console.log(rRuleText);
   const { projectId } = useParams();
 
   useEffect(() => {
@@ -201,7 +206,6 @@ const EditTask: React.FC<
   };
 
   const openModal = () => {
-    task.recurrenceRule && props.updateRruleString(task.recurrenceRule);
     setVisible(true);
   };
 
@@ -222,14 +226,6 @@ const EditTask: React.FC<
 
   useEffect(() => {
     updateExpandedMyself(true);
-    //initialize due type
-    if (task.recurrenceRule) {
-      setDueType('dueByRec');
-    } else {
-      setDueType('dueByTime');
-    }
-    //set due time
-    if (task.dueTime) setDueTimeVisible(true);
     //set remind type
     if (task.reminderSetting && task.reminderSetting.date) {
       setRemindButton('reminderDate');
@@ -242,6 +238,7 @@ const EditTask: React.FC<
     if (task.reminderSetting && task.reminderSetting.time)
       setReminderTimeVisible(true);
   }, []);
+
   const result = ['15', '30', '45', '60'];
   const options = result.map((time: string) => {
     return { value: time };

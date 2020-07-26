@@ -86,10 +86,8 @@ export const updateRruleString = (rrulestr: string) =>
   actions.updateRRuleString({ rruleString: rrulestr });
 
 export const convertToTextWithRRule = (rrule: string) => {
-  console.log(rrule);
   const rule = RRule.fromString(rrule);
   const resultString = rule.toText();
-
   const result =
     resultString.charAt(0).toUpperCase() +
     resultString.slice(1) +
@@ -103,9 +101,6 @@ export const convertToTextWithRRule = (rrule: string) => {
     rrule.substr(17, 2) +
     ':' +
     rrule.substr(19, 2);
-  console.log(rule);
-  console.log(resultString);
-  console.log(Frequency[rule.options.freq]);
   return result;
 };
 
