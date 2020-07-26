@@ -113,7 +113,6 @@ const EditTask: React.FC<
       ? 'dueByRec'
       : 'dueByTime'
   );
-  console.log(task);
   const [reminderType, setReminderType] = useState('remindBefore');
   const [dueTimeVisible, setDueTimeVisible] = useState(!!task.dueTime);
   const [reminderTimeVisible, setReminderTimeVisible] = useState(false);
@@ -395,17 +394,16 @@ const EditTask: React.FC<
             </div>
           )}
           {dueType === 'dueByRec' && (
-            <div>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <div className="recurrence-title">
-                  <div>{rRuleText}</div>
-                </div>
+            <div
+              style={{
+                borderTop: '1px solid #E8E8E8',
+                borderBottom: '1px solid #E8E8E8',
+                paddingTop: '24px',
+                marginBottom: '24px',
+              }}
+            >
+              <div className="recurrence-title">
+                <div>{rRuleText}</div>
               </div>
               <ReactRRuleGenerator />
             </div>
